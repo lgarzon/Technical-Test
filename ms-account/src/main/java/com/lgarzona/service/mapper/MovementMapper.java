@@ -1,7 +1,10 @@
 package com.lgarzona.service.mapper;
 
+import com.lgarzona.domain.AccountEntity;
 import com.lgarzona.domain.MovementEntity;
+import com.lgarzona.service.dto.AccountReportResponseDto;
 import com.lgarzona.service.dto.MovementCreateRequestDto;
+import com.lgarzona.service.dto.MovementReportResponseDto;
 import com.lgarzona.service.dto.MovementResponseDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
