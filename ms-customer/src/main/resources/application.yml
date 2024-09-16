@@ -3,7 +3,7 @@ spring:
     name: ms-customer
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/db_customer
+    url: jdbc:postgresql://db-postgres:5432/db_customer
     username: postgres
     password: 123456
     driver-class-name: org.postgresql.Driver
