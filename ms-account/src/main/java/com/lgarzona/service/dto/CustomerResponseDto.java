@@ -7,16 +7,28 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class CustomerReportResponseDto {
+public class CustomerResponseDto {
+
+    private String name;
+
+    private String gender;
+
+    private int age;
 
     private String identification;
-    private String name;
-    private List<AccountReportResponseDto> accounts;
+
+    private String adress;
+
+    private String phone;
+
+    private Long customerId;
+
+    private String password;
+
+    private Boolean status;
 }

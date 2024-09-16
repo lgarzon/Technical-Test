@@ -1,9 +1,8 @@
 package com.lgarzona.controller;
 
-import com.lgarzona.domain.AccountEntity;
+import com.lgarzona.service.CustomerService;
 import com.lgarzona.service.MovementService;
 import com.lgarzona.service.dto.*;
-import com.lgarzona.service.impl.CustomerServiceImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -22,7 +21,7 @@ public class MovementController {
 
     private final MovementService service;
 
-    private final CustomerServiceImpl customerService;
+    private final CustomerService customerService;
 
     @PostMapping(produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_PROBLEM_JSON_VALUE },
             consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_PROBLEM_JSON_VALUE })

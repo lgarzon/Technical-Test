@@ -4,10 +4,8 @@ import com.lgarzona.config.exception.ResourceNotFoundException;
 import com.lgarzona.domain.AccountEntity;
 import com.lgarzona.repository.AccountRepository;
 import com.lgarzona.service.AccountService;
-import com.lgarzona.service.dto.AccountCreateRequestDto;
-import com.lgarzona.service.dto.AccountResponseDto;
-import com.lgarzona.service.dto.AccountUpdateRequestDto;
-import com.lgarzona.service.dto.AccountUpdateStatusRequestDto;
+import com.lgarzona.service.CustomerService;
+import com.lgarzona.service.dto.*;
 import com.lgarzona.service.mapper.AccountMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,6 +25,7 @@ public class AccountServiceImpl implements AccountService {
 
     private final AccountRepository repository;
     private final AccountMapper mapper;
+    private final CustomerService customerService;
 
     @Override
     @Transactional(readOnly = true)
@@ -46,6 +45,7 @@ public class AccountServiceImpl implements AccountService {
     @Override
     @Transactional
     public AccountResponseDto create(AccountCreateRequestDto accountRequest) {
+        getCustomerById(accountRequest.getCustomerId());
         AccountEntity entity = mapper.requestToEntity(accountRequest);
         repository.save(entity);
         return mapper.entityToResponse(entity);
@@ -54,6 +54,7 @@ public class AccountServiceImpl implements AccountService {
     @Override
     @Transactional
     public AccountResponseDto update(Long id, AccountUpdateRequestDto accountRequest) {
+        getCustomerById(accountRequest.getCustomerId());
         AccountEntity entity = getAccountById(id);
         BeanUtils.copyProperties(accountRequest, entity);
         repository.save(entity);
@@ -96,5 +97,13 @@ public class AccountServiceImpl implements AccountService {
             throw new ResourceNotFoundException("Account not found");
         }
         return accountEntityOp.get();
+    }
+
+    private CustomerResponseDto getCustomerById(Long id) {
+        CustomerResponseDto customer = customerService.findById(id);
+        if(customer == null) {
+            throw new ResourceNotFoundException("Customer not found");
+        }
+        return customer;
     }
 }

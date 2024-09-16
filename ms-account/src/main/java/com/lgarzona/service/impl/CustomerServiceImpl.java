@@ -1,14 +1,20 @@
 package com.lgarzona.service.impl;
 
+import com.lgarzona.client.CustomerClientRest;
+import com.lgarzona.config.exception.ResourceNotFoundException;
 import com.lgarzona.domain.AccountEntity;
 import com.lgarzona.domain.MovementEntity;
 import com.lgarzona.repository.AccountRepository;
 import com.lgarzona.repository.MovementRepository;
+import com.lgarzona.service.CustomerService;
 import com.lgarzona.service.dto.AccountReportResponseDto;
 import com.lgarzona.service.dto.CustomerReportResponseDto;
+import com.lgarzona.service.dto.CustomerResponseDto;
 import com.lgarzona.service.dto.MovementReportResponseDto;
+import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -20,11 +26,13 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class CustomerServiceImpl {
+public class CustomerServiceImpl implements CustomerService {
 
     private final MovementRepository movementRepository;
     private final AccountRepository accountRepository;
+    private final CustomerClientRest client;
 
+    @Override
     public CustomerReportResponseDto getCustomerAccountsWithMovements(Long customerId, LocalDateTime startDate, LocalDateTime endDate) {
 
         List<AccountEntity> accounts = accountRepository.findByCustomerId(customerId);
@@ -58,11 +66,31 @@ public class CustomerServiceImpl {
             return accountDto;
         }).collect(Collectors.toList());
 
+        CustomerResponseDto customer = findById(customerId);
+
+        if (customer == null) {
+            throw new ResourceNotFoundException("Customer not found");
+        }
+
         CustomerReportResponseDto responseDto = new CustomerReportResponseDto();
-        responseDto.setCustomerId(customerId);
+        responseDto.setIdentification(customer.getIdentification());
+        responseDto.setName(customer.getName());
         responseDto.setAccounts(accountDtos);
 
         return responseDto;
 
+    }
+
+    @Override
+    public CustomerResponseDto findById(Long id) {
+        try {
+            return client.findById(id);
+        }catch (FeignException e) {
+            if(e.status() == HttpStatus.NOT_FOUND.value()) {
+                return null;
+            }else {
+                throw e;
+            }
+        }
     }
 }
