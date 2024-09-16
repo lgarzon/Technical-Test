@@ -1,7 +1,6 @@
 package com.lgarzona.service.impl;
 
 import com.lgarzona.config.exception.ResourceNotFoundException;
-import com.lgarzona.domain.AccountEntity;
 import com.lgarzona.domain.MovementEntity;
 import com.lgarzona.repository.MovementRepository;
 import com.lgarzona.service.AccountService;

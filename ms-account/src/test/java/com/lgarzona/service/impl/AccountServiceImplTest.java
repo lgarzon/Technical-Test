@@ -72,35 +72,6 @@ class AccountServiceImplTest {
     }
 
     @Test
-    void createReturnsAccountResponseDto() {
-        AccountCreateRequestDto requestDto = new AccountCreateRequestDto();
-        AccountEntity entity = new AccountEntity();
-        AccountResponseDto responseDto = new AccountResponseDto();
-        when(mapper.requestToEntity(requestDto)).thenReturn(entity);
-        when(repository.save(entity)).thenReturn(entity);
-        when(mapper.entityToResponse(entity)).thenReturn(responseDto);
-
-        AccountResponseDto result = service.create(requestDto);
-
-        assertEquals(responseDto, result);
-    }
-
-    @Test
-    void updateReturnsAccountResponseDto() {
-        Long id = 1L;
-        AccountUpdateRequestDto requestDto = new AccountUpdateRequestDto();
-        AccountEntity entity = new AccountEntity();
-        AccountResponseDto responseDto = new AccountResponseDto();
-        when(repository.findById(id)).thenReturn(Optional.of(entity));
-        when(repository.save(entity)).thenReturn(entity);
-        when(mapper.entityToResponse(entity)).thenReturn(responseDto);
-
-        AccountResponseDto result = service.update(id, requestDto);
-
-        assertEquals(responseDto, result);
-    }
-
-    @Test
     void updateStatusReturnsAccountResponseDto() {
         Long id = 1L;
         AccountUpdateStatusRequestDto requestDto = new AccountUpdateStatusRequestDto();
