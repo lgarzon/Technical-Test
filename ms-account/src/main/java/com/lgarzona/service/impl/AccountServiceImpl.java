@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -28,6 +29,7 @@ public class AccountServiceImpl implements AccountService {
     private final AccountMapper mapper;
 
     @Override
+    @Transactional(readOnly = true)
     public List<AccountResponseDto> findAll() {
         return StreamSupport.stream(repository.findAll().spliterator(), false)
                 .map(mapper::entityToResponse)
@@ -35,12 +37,14 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public AccountResponseDto findByAccountId(Long accountId) {
         return repository.findById(accountId)
-                .map(mapper::entityToResponse).orElseThrow(() -> new ResourceNotFoundException("Resource not found"));
+                .map(mapper::entityToResponse).orElseThrow(() -> new ResourceNotFoundException("Account not found"));
     }
 
     @Override
+    @Transactional
     public AccountResponseDto create(AccountCreateRequestDto accountRequest) {
         AccountEntity entity = mapper.requestToEntity(accountRequest);
         repository.save(entity);
@@ -48,6 +52,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
+    @Transactional
     public AccountResponseDto update(Long id, AccountUpdateRequestDto accountRequest) {
         AccountEntity entity = getAccountById(id);
         BeanUtils.copyProperties(accountRequest, entity);
@@ -56,6 +61,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
+    @Transactional
     public AccountResponseDto updateStatus(Long id, AccountUpdateStatusRequestDto accountRequest) {
         AccountEntity entity = getAccountById(id);
         entity.setStatus(accountRequest.getStatus());
@@ -64,15 +70,30 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
+    @Transactional
+    public AccountResponseDto updateBalance(Long id, Double amount) {
+        AccountEntity entity = getAccountById(id);
+        entity.setBalance(entity.getBalance() + amount);
+        repository.save(entity);
+        return mapper.entityToResponse(entity);
+    }
+
+    @Override
+    @Transactional
     public void delete(Long id) {
         AccountEntity entity = getAccountById(id);
         repository.delete(entity);
     }
 
+    @Override
+    public Double getAccountBalance(String accountNumber) {
+        return repository.findByAccountNumber(accountNumber).getBalance();
+    }
+
     private AccountEntity getAccountById(Long id) {
         Optional<AccountEntity> accountEntityOp = repository.findById(id);
         if(accountEntityOp.isEmpty()) {
-            throw new ResourceNotFoundException("Resource not found");
+            throw new ResourceNotFoundException("Account not found");
         }
         return accountEntityOp.get();
     }
