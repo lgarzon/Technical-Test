@@ -10,7 +10,7 @@ import java.util.List;
 public interface CustomerService {
 
     List<CustomerResponseDto> findAll();
-    List<CustomerResponseDto> findByCustomerId(Long customerId);
+    CustomerResponseDto findByCustomerId(Long customerId);
     CustomerResponseDto create(CustomerCreateRequestDto customerRequest);
     CustomerResponseDto update(Long id, CustomerUpdateRequestDto customerRequest);
     CustomerResponseDto updateStatus(Long id, CustomerUpdateStatusRequestDto customerRequest);

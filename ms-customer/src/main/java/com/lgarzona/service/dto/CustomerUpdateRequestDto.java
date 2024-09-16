@@ -14,9 +14,6 @@ import lombok.NoArgsConstructor;
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class CustomerUpdateRequestDto {
 
-    @NotNull
-    private Long customerId;
-
     @NotBlank
     private String name;
 
