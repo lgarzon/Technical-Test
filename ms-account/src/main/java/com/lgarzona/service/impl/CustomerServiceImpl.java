@@ -12,6 +12,7 @@ import com.lgarzona.service.dto.CustomerReportResponseDto;
 import com.lgarzona.service.dto.CustomerResponseDto;
 import com.lgarzona.service.dto.MovementReportResponseDto;
 import feign.FeignException;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -21,6 +22,8 @@ import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -66,7 +69,14 @@ public class CustomerServiceImpl implements CustomerService {
             return accountDto;
         }).collect(Collectors.toList());
 
-        CustomerResponseDto customer = findById(customerId);
+        CompletableFuture<CustomerResponseDto> customerCF = findByIdResilience(customerId);
+        CustomerResponseDto customer = null;
+
+        try {
+            customer = customerCF.get();
+        } catch (InterruptedException | ExecutionException e) {
+            log.warn("customerCF.get(): {}", e.getMessage(), e);
+        }
 
         if (customer == null) {
             throw new ResourceNotFoundException("Customer not found");
@@ -92,5 +102,32 @@ public class CustomerServiceImpl implements CustomerService {
                 throw e;
             }
         }
+    }
+
+    @CircuitBreaker(name="customer", fallbackMethod = "findByIdResilienceFallBackMethod")
+    @Override
+    public CompletableFuture<CustomerResponseDto> findByIdResilience(Long id) {
+        log.info("findByIdResilience");
+        return CompletableFuture.supplyAsync(()-> {
+                    try {
+                        return client.findById(id);
+                    } catch (FeignException e) {
+                        if(e.status() == HttpStatus.NOT_FOUND.value()) {
+                            return null;
+                        }else{
+                            throw e;
+                        }
+                    }
+                }
+        );
+
+    }
+
+    @Override
+    public CompletableFuture<CustomerResponseDto> findByIdResilienceFallBackMethod(Long id, Throwable t) {
+        log.info("findByIdResilienceFallBackMethod: {}", t.getMessage());
+        return CompletableFuture.supplyAsync(()-> {
+            throw new ResourceNotFoundException("Customer service is not available");
+        });
     }
 }

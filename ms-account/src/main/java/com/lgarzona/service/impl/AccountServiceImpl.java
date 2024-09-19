@@ -15,6 +15,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -100,10 +102,19 @@ public class AccountServiceImpl implements AccountService {
     }
 
     private CustomerResponseDto getCustomerById(Long id) {
-        CustomerResponseDto customer = customerService.findById(id);
+        CompletableFuture<CustomerResponseDto> customerCF = customerService.findByIdResilience(id);
+        CustomerResponseDto customer = null;
+
+        try {
+            customer = customerCF.get();
+        } catch (InterruptedException | ExecutionException e) {
+            log.warn("customerCF.get(): {}", e.getMessage(), e);
+        }
+
         if(customer == null) {
             throw new ResourceNotFoundException("Customer not found");
         }
+
         return customer;
     }
 }
