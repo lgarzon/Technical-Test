@@ -6,9 +6,9 @@ Este proyecto contiene dos microservicios desarrollados con **Spring Boot** que 
 
 Antes de iniciar, asegúrate de tener las siguientes herramientas instaladas:
 
-- **Docker** (versión 20.10 o superior)
-- **Java 21** (o superior)
-- **Maven 3.8.6** (si compilas localmente)
+- **Docker**
+- **Java 21**
+- **Maven 3.8.6**
 - **Spring Boot 3.3.3**
 
 ## Tecnologías utilizadas
@@ -43,6 +43,7 @@ docker run -p 3306:3306 --name bd-mysql --network net-ms1 -e MYSQL_ROOT_PASSWORD
 ## Despliegue de los microservicios
 
 ### 4. Compilar el microservicio ms-account
+Se esta haciendo uno de variables de ambiente, en caso desees modificarlas o revisarlas, se encuentran en el archivo .env en la raiz de cada servicio.
 
 #### 1. Primero, compila el código fuente del microservicio ms-account utilizando Maven:
 ./mvnw clean package -DskipTests
@@ -51,9 +52,10 @@ docker run -p 3306:3306 --name bd-mysql --network net-ms1 -e MYSQL_ROOT_PASSWORD
 docker build -t ms-account:1.0.0 .
 
 #### 3. Finalmente, levanta el contenedor de ms-account en Docker:
-docker run -p 8082:8082 --name ms-account --network net-ms1 -d ms-account:1.0.0
+docker run -p 8082:8082 --env-file .env --name ms-account --network net-ms1 -d ms-account:1.0.0
 
 ### 5. Compilar el microservicio ms-customer
+Se esta haciendo uno de variables de ambiente, en caso desees modificarlas o revisarlas, se encuentran en el archivo .env en la raiz de cada servicio.
 
 #### 1. Primero, compila el código fuente del microservicio ms-customer utilizando Maven:
 ./mvnw clean package -DskipTests
@@ -62,7 +64,7 @@ docker run -p 8082:8082 --name ms-account --network net-ms1 -d ms-account:1.0.0
 docker build -t ms-customer:1.0.0 .
 
 #### 3. Finalmente, levanta el contenedor de ms-customer en Docker:
-docker run -p 8080:8080 --name ms-customer --network net-ms1 -d ms-customer:1.0.0
+docker run -p 8080:8080 --env-file .env --name ms-customer --network net-ms1 -d ms-customer:1.0.0
 
 ## Acceso a los Microservicios
 Una vez que ambos microservicios estén en ejecución, puedes acceder a ellos en los siguientes puertos:
