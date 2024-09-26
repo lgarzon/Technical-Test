@@ -1,13 +1,13 @@
 server:
-  port: 8082
+  port: ${PORT:8082}
 spring:
   application:
     name: ms-account
 
   datasource:
-    url: jdbc:mysql://bd-mysql:3306/db_account?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
-    username: root
-    password: 123456
+    url: jdbc:mysql://${DB_HOST:bd-mysql:3306}/${DB_NAME:db_account}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+    username: ${DB_USER:root}
+    password: ${DB_PASSWORD:123456}
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
@@ -28,3 +28,8 @@ resilience4j:
     instances:
       customer:
         base-config: default
+
+clients:
+  customer:
+    url: ${CUSTOMER_URL:http://ms-customer:8080}
+    endpoint: ${CUSTOMER_ENDPOINT:/v1/customers}

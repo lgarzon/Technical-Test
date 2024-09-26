@@ -1,5 +1,6 @@
 FROM amazoncorretto:21-alpine
 VOLUME /tmp
-#EXPOSE 8888
 ADD ./target/*.jar app.jar
+ENV PORT=8080
+EXPOSE $PORT
 ENTRYPOINT ["java","-jar","/app.jar"]
