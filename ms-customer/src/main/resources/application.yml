@@ -1,11 +1,13 @@
+server:
+  port: ${PORT:8080}
 spring:
   application:
     name: ms-customer
 
   datasource:
-    url: jdbc:postgresql://db-postgres:5432/db_customer
-    username: postgres
-    password: 123456
+    url: jdbc:postgresql://${DB_HOST:db-postgres:5432}/${DB_NAME:db_customer}
+    username: ${DB_USER:postgres}
+    password: ${DB_PASSWORD:123456}
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
