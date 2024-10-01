@@ -5,7 +5,7 @@ spring:
     name: ms-account
 
   datasource:
-    url: jdbc:mysql://${DB_HOST:bd-mysql:3306}/${DB_NAME:db_account}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+    url: jdbc:mysql://${DB_HOST:db-mysql:3306}/${DB_NAME:db_account}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
     username: ${DB_USER:root}
     password: ${DB_PASSWORD:123456}
     driver-class-name: com.mysql.cj.jdbc.Driver
